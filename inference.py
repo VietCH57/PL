@@ -21,8 +21,13 @@ def main(args):
     collate_fn = make_apl_collate_fn(pad_idx=69, error_pad_idx=2)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=2)
     
+    pad_idx = vocab.get("[PAD]", 69)
+    
     model = PhoneticLinguistic(
-        num_classes=len(vocab), phon_feat_bins=768, lstm_hidden=256, proj_dim=1024
+        num_classes=len(vocab), 
+        phon_feat_bins=768, 
+        lstm_hidden=256, 
+        proj_dim=1024
     ).to(device)
     
     print(f"Loading weights from: {args.checkpoint}")
@@ -70,10 +75,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--test_csv\", type=str, default=\"/kaggle/input/en-mdd/test.csv\")
-    parser.add_argument("--wav_dir\", type=str, default=\"/kaggle/input/en-mdd/EN_MDD/WAV/\")
-    parser.add_argument("--vocab_path\", type=str, default=\"./vocab.json\")
-    parser.add_argument("--checkpoint\", type=str, default=\"./checkpoint/best_model.pth\")
-    parser.add_argument("--batch_size\", type=int, default=16)
+    parser.add_argument("--test_csv", type=str, default="/kaggle/input/en-mdd/test.csv")
+    parser.add_argument("--wav_dir", type=str, default="/kaggle/input/en-mdd/EN_MDD/WAV/")
+    parser.add_argument("--vocab_path", type=str, default="./vocab.json")
+    parser.add_argument("--checkpoint", type=str, default="./checkpoint/best_model.pth")
+    parser.add_argument("--batch_size", type=int, default=16)
     args = parser.parse_args()
     main(args)

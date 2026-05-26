@@ -43,6 +43,9 @@ def main(args):
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn, num_workers=4)
     dev_loader = DataLoader(dev_dataset, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4)
     
+    pad_idx = vocab.get("[PAD]", 69)
+    empty_idx = vocab.get("", 68)
+    
     model = PhoneticLinguistic(
         num_classes=len(vocab), phon_feat_bins=768, lstm_hidden=256, proj_dim=1024
     ).to(device)
