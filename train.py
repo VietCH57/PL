@@ -44,10 +44,12 @@ def main(args):
     dev_loader = DataLoader(dev_dataset, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4)
     
     pad_idx = vocab.get("[PAD]", 69)
-    empty_idx = vocab.get("", 68)
     
     model = PhoneticLinguistic(
-        num_classes=len(vocab), phon_feat_bins=768, lstm_hidden=256, proj_dim=1024
+        num_classes=len(vocab) + 1, 
+        phon_feat_bins=768, 
+        lstm_hidden=256, 
+        proj_dim=1024
     ).to(device)
     
     criterion = nn.CTCLoss(blank=69, zero_infinity=True)

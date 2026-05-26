@@ -24,7 +24,7 @@ def main(args):
     pad_idx = vocab.get("[PAD]", 69)
     
     model = PhoneticLinguistic(
-        num_classes=len(vocab), 
+        num_classes=len(vocab) + 1, 
         phon_feat_bins=768, 
         lstm_hidden=256, 
         proj_dim=1024
