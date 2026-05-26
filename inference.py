@@ -70,10 +70,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(\"--test_csv\", type=str, default=\"/kaggle/input/en-mdd/test.csv\")
-    parser.add_argument(\"--wav_dir\", type=str, default=\"/kaggle/input/en-mdd/EN_MDD/WAV/\")
-    parser.add_argument(\"--vocab_path\", type=str, default=\"./vocab.json\")
-    parser.add_argument(\"--checkpoint\", type=str, default=\"./checkpoint/best_model.pth\")
-    parser.add_argument(\"--batch_size\", type=int, default=16)
+    parser.add_argument("--test_csv\", type=str, default=\"/kaggle/input/en-mdd/test.csv\")
+    parser.add_argument("--wav_dir\", type=str, default=\"/kaggle/input/en-mdd/EN_MDD/WAV/\")
+    parser.add_argument("--vocab_path\", type=str, default=\"./vocab.json\")
+    parser.add_argument("--checkpoint\", type=str, default=\"./checkpoint/best_model.pth\")
+    parser.add_argument("--batch_size\", type=int, default=16)
     args = parser.parse_args()
     main(args)
