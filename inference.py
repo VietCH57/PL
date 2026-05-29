@@ -15,13 +15,20 @@ def main(args):
     
     with open(args.vocab_path, 'r', encoding='utf-8') as f:
         vocab = json.load(f)
+        
+    if "[PAD]" not in vocab:
+        vocab["[PAD]"] = len(vocab)
+    if "" not in vocab:
+        vocab[""] = len(vocab)
+        
     id_to_vocab = {v: k for k, v in vocab.items()}
     
-    test_dataset = APLSupervisedDataset(args.test_csv, args.wav_dir, args.vocab_path)
-    collate_fn = make_apl_collate_fn(pad_idx=69, error_pad_idx=2)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=2)
-    
     pad_idx = vocab.get("[PAD]", 69)
+    empty_idx = vocab.get("", 68)
+    
+    test_dataset = APLSupervisedDataset(args.test_csv, args.wav_dir, args.vocab_path)
+    collate_fn = make_apl_collate_fn(pad_idx=pad_idx, error_pad_idx=2)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=2)
     
     model = PhoneticLinguistic(
         num_classes=len(vocab) + 1, 
@@ -46,17 +53,17 @@ def main(args):
             _, log_probs, min_time = model(waveforms, linguistics)
             input_lengths = torch.full((waveforms.size(0),), fill_value=min_time, dtype=torch.long)
             
-            hyps = greedy_decode(log_probs, input_lengths, id_to_vocab)
+            hyps = greedy_decode(log_probs, input_lengths, id_to_vocab, pad_idx, empty_idx)
             all_hyps.extend(hyps)
             
             for i in range(transcripts.size(0)):
                 t_seq = transcripts[i][:target_lengths[i]].tolist()
-                all_trans.append([id_to_vocab[idx] for idx in t_seq if idx != 69])
+                all_trans.append([id_to_vocab[idx] for idx in t_seq if idx != pad_idx])
                 
             for i in range(linguistics.size(0)):
-                l_len = (batch['linguistics'][i] != 69).sum().item()
+                l_len = (batch['linguistics'][i] != pad_idx).sum().item()
                 l_seq = batch['linguistics'][i][:l_len].tolist()
-                all_canons.append([id_to_vocab[idx] for idx in l_seq if idx != 69])
+                all_canons.append([id_to_vocab[idx] for idx in l_seq if idx != pad_idx])
                 
     metrics = calculate_all_metrics(all_hyps, all_trans, all_canons)
     
